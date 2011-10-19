@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.3dev'
+version = '1.0dev'
 
 tests_require = [
     'zope.app.wsgi',
@@ -9,7 +9,7 @@ tests_require = [
     'zeam.form.base [test]',
     ]
 
-setup(name='zeam.form.composed',
+setup(name='zeam.form.rdb',
       version=version,
       description="Extra SQLAlchemy support for zeam.form",
       long_description=open("README.txt").read() + "\n" +
