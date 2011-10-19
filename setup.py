@@ -31,7 +31,13 @@ setup(name='zeam.form.rdb',
       install_requires=[
         'setuptools',
         'zeam.form.base >= 1.0',
+        'zeam.form.ztk',
         ],
+      entry_points="""
+      # -*- Entry points: -*-
+      [zeam.form.components]
+      default = zeam.form.rdb.fields:registerDefault
+      """,
       tests_require = tests_require,
       extras_require = {'test': tests_require},
       )
