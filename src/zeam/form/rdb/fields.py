@@ -74,11 +74,7 @@ class ModelFields(object):
             else:
                 return Fields()
 
-        fields = getattr(model, '__model_fields', None)
-        if fields is None:
-            fields = Fields(*list(ModelFieldFactory(model).produce()))
-            setattr(model, '__model_fields', fields)
-        return fields
+        return Fields(*list(ModelFieldFactory(model).produce()))
 
     def __set__(self, form, value):
         raise AttributeError
