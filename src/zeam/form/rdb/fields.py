@@ -57,7 +57,11 @@ class ModelFieldFactory(object):
             field.title = info['title']
             field.required = info['required']
             field.description = info.get('description')
-            yield interfaces.IField(field)
+            result = interfaces.IField(field)
+            if 'form' in info:
+                for key, value in info['form'].items():
+                    setattr(result, key, value)
+            yield result
 
 
 class ModelFields(object):
