@@ -14,11 +14,27 @@ def foreign_source(value_column, info):
     if not info['required']:
         values.append(SimpleTerm(title='(not set)', value=None))
     session = Session()
-    title_column = value_column
+
+    table = value_column.table
+    columns = [value_column,]
     if 'title_column' in info:
-        title_column = title_column.table.columns[info['title_column']]
-    for result in session.query(title_column, value_column).all():
-        values.append(SimpleTerm(title=str(result[0]), value=result[1]))
+        if isinstance(info['title_column'], basestring):
+            columns.append(table.columns[info['title_column']])
+        else:
+            for identifier in info['title_column']:
+                columns.append(table.columns[identifier])
+    else:
+        columns.append(value_column)
+    if 'title_factory' in info:
+        title_factory = info['title_factory']
+    else:
+        title_factory = lambda d: str(d[0])
+
+    for result in session.query(*columns).all():
+        values.append(
+            SimpleTerm(
+                title=title_factory(result[1:]),
+                value=result[0]))
     return SimpleVocabulary(values)
 
 
