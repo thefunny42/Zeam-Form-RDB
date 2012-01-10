@@ -82,19 +82,19 @@ class ModelFieldFactory(object):
 
 class ModelFields(object):
 
+    def __new__(cls, model=None):
+        if model is not None:
+            return Fields(*list(ModelFieldFactory(model).produce()))
+        return object.__new__(cls, model=model)
+
     def __init__(self, model=None):
-        self.__model = model
         self.__cache = None
 
     def __get__(self, form, type=None):
-        model = self.__model
-        if model is None:
-            if form is not None:
-                model = form.context.__class__
-            else:
-                return Fields()
-
-        return Fields(*list(ModelFieldFactory(model).produce()))
+        if form is not None:
+            model = form.context.__class__
+            return Fields(*list(ModelFieldFactory(model).produce()))
+        return Fields()
 
     def __set__(self, form, value):
         raise AttributeError
