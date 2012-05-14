@@ -30,7 +30,11 @@ def foreign_source(value_column, info):
     else:
         title_factory = lambda d: str(d[0])
 
-    for result in session.query(*columns).all():
+    title_query = session.query(*columns)
+    if 'title_query' in info:
+        title_query = info['title_query'](title_query)
+
+    for result in title_query.all():
         values.append(
             SimpleTerm(
                 title=title_factory(result[1:]),
