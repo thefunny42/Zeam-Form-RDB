@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0dev'
+version = '1.0b2'
 
 tests_require = [
     'zope.app.wsgi',
@@ -29,9 +29,13 @@ setup(name='zeam.form.rdb',
       include_package_data=True,
       zip_safe=False,
       install_requires=[
+        'grokcore.component',
         'setuptools',
         'zeam.form.base >= 1.0',
         'zeam.form.ztk',
+        'zope.i18nmessageid',
+        'zope.schema',
+        'z3c.saconfig',
         ],
       tests_require = tests_require,
       extras_require = {'test': tests_require},

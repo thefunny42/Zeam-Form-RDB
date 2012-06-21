@@ -7,12 +7,65 @@ from zeam.form.base.components import loadComponents
 from zope.schema import Choice
 from zope.schema import interfaces as schema_interfaces
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
+from zope.i18nmessageid import MessageFactory
+
+_ = MessageFactory('zeam.form.base')
+
+
+class ExtendingVocabulary(SimpleVocabulary):
+    """A vocabulary that can be extended with terms of an another
+    vocabulary on demand.
+    """
+
+    def __init__(self, terms, query=None):
+        super(ExtendingVocabulary, self).__init__(terms)
+        self._query = query
+        self._vocabulary = None
+
+    def addTerm(self, term):
+        if term.value in self.by_value:
+            raise ValueError(term)
+        if term.token in self.by_token:
+            raise ValueError(term)
+        self.by_value[term.value] = term
+        self.by_token[term.token] = term
+        self._terms.append(term)
+
+    def getVocabulary(self):
+        if self._vocabulary is None and self._query is not None:
+            self._vocabulary = SimpleVocabulary(list(self._query))
+        return self._vocabulary
+
+    def getTerm(self, value):
+        try:
+            return super(ExtendingVocabulary, self).getTerm(value)
+        except LookupError:
+            vocabulary = self.getVocabulary()
+            if vocabulary is None:
+                raise
+            term = vocabulary.getTerm(value)
+            self.addTerm(term)
+            return term
+
+    def getTermByToken(self, token):
+        try:
+            return super(ExtendingVocabulary, self).getTermByToken(token)
+        except LookupError:
+            vocabulary = self.getVocabulary()
+            if vocabulary is None:
+                raise
+            term = vocabulary.getTermByToken(token)
+            self.addTerm(term)
+            return term
 
 
 def foreign_source(value_column, info):
-    values = []
+    """Generate a vocabulary containing terms for each possible value
+    you can set in a SQLAlchemy foreign key.
+    """
+    defaults = []
     if not info['required']:
-        values.append(SimpleTerm(title='(not set)', value=None))
+        defaults.append(SimpleTerm(title=_(u'(not set)'), value=None))
     session = Session()
 
     table = value_column.table
@@ -30,19 +83,26 @@ def foreign_source(value_column, info):
     else:
         title_factory = lambda d: str(d[0])
 
-    title_query = session.query(*columns)
-    if 'title_query' in info:
-        title_query = info['title_query'](title_query)
-
-    for result in title_query.all():
-        values.append(
-            SimpleTerm(
+    def create_terms(query):
+        for result in query.all():
+            yield SimpleTerm(
                 title=title_factory(result[1:]),
-                value=result[0]))
-    return SimpleVocabulary(values)
+                value=result[0])
+
+    full_query = session.query(*columns)
+    if 'title_query' in info:
+        title_terms = create_terms(info['title_query'](full_query))
+        full_terms = create_terms(full_query)
+    else:
+        title_terms = create_terms(full_query)
+        full_terms = None
+
+    return ExtendingVocabulary(defaults + list(title_terms), full_terms)
 
 
 class ModelFieldFactory(object):
+    """Generate zeam.form fields out of a SQLAlchemy model.
+    """
     grok.implements(interfaces.IFieldFactory)
 
     def __init__(self, context):
@@ -87,6 +147,9 @@ class ModelFieldFactory(object):
 
 
 class ModelFields(object):
+    """Object descriptor that generate and cache a list of zeam.form
+    fields out of a SQLAlchemy model that it is applied on.
+    """
 
     def __new__(cls, model=None):
         if model is not None:

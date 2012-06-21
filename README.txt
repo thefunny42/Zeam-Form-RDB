@@ -18,8 +18,8 @@ Example::
   from zeam.form.base import Form
 
   class MyForm(Form):
-    label = "Test form"
-    fields = ModelFields()
+      label = "Test form"
+      fields = ModelFields()
 
 
 In your `SQLAlchemy`_ schema, you can use the extra dictionnary
@@ -56,7 +56,9 @@ Example::
 
 For a ForeignKey, you have the possibility to provides multiple
 columns to ``title_column``, and a function to be called to create the
-title as ``title_factory``, both in the ``info`` dictionnary.
+title as ``title_factory``, both in the ``info``
+dictionnary. ``title_query`` can specified to refine the SQLAlchemy
+request used to obtain the title terms.
 
 A field will be required unless the column is nullable, or the option
 ``required`` is given through ``info``.
