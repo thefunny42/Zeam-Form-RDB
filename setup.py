@@ -6,7 +6,7 @@ version = '1.0dev'
 tests_require = [
     'zope.app.wsgi',
     'zope.testing',
-    'zeam.form.base [test]',
+    'zeam.form.ztk [test]',
     ]
 
 setup(name='zeam.form.rdb',
@@ -31,12 +31,20 @@ setup(name='zeam.form.rdb',
       install_requires=[
         'grokcore.component',
         'setuptools',
+        'sqlalchemy',
+        'z3c.saconfig',
         'zeam.form.base >= 1.0',
         'zeam.form.ztk',
+        'zope.component',
         'zope.i18nmessageid',
+        'zope.interface',
         'zope.schema',
-        'z3c.saconfig',
         ],
+      entry_points="""
+      # -*- Entry points: -*-
+      [zeam.form.components]
+      factories = zeam.form.rdb.factories:register
+      """,
       tests_require = tests_require,
       extras_require = {'test': tests_require},
       )

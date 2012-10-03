@@ -1,0 +1,121 @@
+==============================
+zeam.form.rdb field generation
+==============================
+
+You can generate zeam.form fields out of SQLAlchemy fields, like this
+is done for ``zope.schema`` fields.
+
+  >>> from sqlalchemy import Column, ForeignKey
+  >>> from sqlalchemy.types import Integer, String, Text, Date, DateTime, Float
+  >>> from zeam.form.base import Fields, NO_VALUE
+
+
+String Field
+============
+
+A simple example with a string field:
+
+  >>> simple_string_fields = Fields(Column('Name', String(64)))
+  >>> simple_string_fields
+  <Fields>
+  >>> len(simple_string_fields)
+  1
+  >>> simple_string_field = simple_string_fields['Name']
+  >>> simple_string_field
+  <TextLineField Name>
+  >>> simple_string_field.title
+  u'Name'
+  >>> simple_string_field.required
+  False
+
+
+Required Integer Field
+======================
+
+A more complicated example with a required integer field:
+
+  >>> integer_fields = Fields(Column('Age', Integer, nullable=False))
+  >>> integer_fields
+  <Fields>
+  >>> len(integer_fields)
+  1
+  >>> integer_field = integer_fields['Age']
+  >>> integer_field
+  <IntegerField Age>
+  >>> integer_field.title
+  u'Age'
+  >>> integer_field.defaultValue
+  <Marker NO_VALUE>
+  >>> integer_field.required
+  True
+
+
+Float Field with default
+========================
+
+A float field that provide a default value:
+
+  >>> float_fields = Fields(Column('Power', Float, nullable=True, default=10))
+  >>> float_fields
+  <Fields>
+  >>> len(float_fields)
+  1
+  >>> float_field = float_fields['Power']
+  >>> float_field
+  <FloatField Power>
+  >>> float_field.title
+  u'Power'
+  >>> float_field.defaultValue
+  10
+  >>> float_field.required
+  False
+
+
+Text Field overriding configuration
+===================================
+
+A text field that override the form configuration with the help of
+sqlalchemy's info dictionnary:
+
+  >>> text_fields = Fields(Column(
+  ...   'citation', Text, nullable=True, default='<Empty>',
+  ...   info={'title': u'Excerpt', 'required': True, 'defaultValue': NO_VALUE}))
+  >>> text_fields
+  <Fields>
+  >>> len(text_fields)
+  1
+  >>> text_field = text_fields['citation']
+  >>> text_field
+  <TextField Excerpt>
+  >>> text_field.title
+  u'Excerpt'
+  >>> text_field.description
+  u''
+  >>> text_field.defaultValue
+  <Marker NO_VALUE>
+  >>> text_field.required
+  True
+
+
+String Field with a custom form type
+====================================
+
+A regular string field in sqlalchemy considered as an URI field in
+zeam.form:
+
+  >>> from zeam.form.ztk.widgets.uri import URIField
+  >>> uri_fields = Fields(Column('URL', String(128), nullable=False,
+  ...     info={'factory': URIField, 'description': u'URL to your site'}))
+  >>> uri_fields
+  <Fields>
+  >>> len(uri_fields)
+  1
+  >>> uri_field = uri_fields['URL']
+  >>> uri_field
+  <URIField URL>
+  >>> uri_field.title
+  u'URL'
+  >>> uri_field.description
+  u'URL to your site'
+  >>> uri_field.required
+  True
