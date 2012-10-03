@@ -31,7 +31,7 @@ Example::
 
     from sqlalchemy import Column, ForeignKey
     from sqlalchemy.types import Integer, String
-    from zope import schema
+    from zeam.form.ztk.widgets.uri import URIField
 
     idT_Effort = Column(
         'idT_Effort',
@@ -43,22 +43,27 @@ Example::
         Integer,
         ForeignKey('T_Opportunity.idT_Opportunities'),
         info={'title': u'Opportunity',
-              'title_column': 'Title'})
+              'foreignTitleColumn': 'Title'})
     Name = Column(
         'Name',
-        String(45))
+        String(45),
+        info={'minLength': 20,
+              'maxLength': 45})
     URL = Column(
         'URL',
         String(63),
         info={'title': u"URL",
-              'schema': schema.URI})
+              'description': u"Website URL"
+              'factory': URIField,
+              'defaultValue': 'http://github.com',
+              'required': True})
 
 
 For a ForeignKey, you have the possibility to provides multiple
-columns to ``title_column``, and a function to be called to create the
-title as ``title_factory``, both in the ``info``
-dictionnary. ``title_query`` can specified to refine the SQLAlchemy
-request used to obtain the title terms.
+columns to ``foreignTitleColumn``, and a function to be called to
+create the title as ``foreignTitleFactory``, both in the ``info``
+dictionnary. ``foreignTitleQuery`` can specified to refine the
+SQLAlchemy request used to obtain the title terms.
 
 A field will be required unless the column is nullable, or the option
 ``required`` is given through ``info``.

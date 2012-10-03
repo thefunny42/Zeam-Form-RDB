@@ -4,7 +4,8 @@ Changes
 1.0 (unreleased)
 ----------------
 
-* ...
+* Refactor not to rely any longer on ``zope.schema``. SQLAlchemy
+  Column's are directly convertedto zeam form fields.
 
 1.0b2 (2012/06/21)
 ------------------
