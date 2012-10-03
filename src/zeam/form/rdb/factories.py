@@ -12,7 +12,7 @@ class IFieldBuilder(Interface):
     pass
 
 
-class SQLFieldFactory(object):
+class SQLFieldBuilder(object):
     grok.implements(IFieldBuilder)
     field = fields.TextLineField
     sql_field = sqlalchemy.types.String
@@ -47,41 +47,41 @@ class SQLFieldFactory(object):
         return factory(**options)
 
 
-class StringFieldFactory(SQLFieldFactory):
+class StringFieldBuilder(SQLFieldBuilder):
     pass
 
 
-class TextFieldFactory(SQLFieldFactory):
+class TextFieldBuilder(SQLFieldBuilder):
     field = fields.TextField
     sql_field = sqlalchemy.types.Text
 
 
-class IntegerFieldFactory(SQLFieldFactory):
+class IntegerFieldBuilder(SQLFieldBuilder):
     field = fields.IntegerField
     sql_field = sqlalchemy.types.Integer
 
 
-class FloatFieldFactory(SQLFieldFactory):
+class FloatFieldBuilder(SQLFieldBuilder):
     field = fields.FloatField
     sql_field = sqlalchemy.types.Float
 
 
-class DateFieldFactory(SQLFieldFactory):
+class DateFieldBuilder(SQLFieldBuilder):
     field = fields.DateField
     sql_field = sqlalchemy.types.Date
 
 
-class DatetimeFieldFactory(SQLFieldFactory):
+class DatetimeFieldBuilder(SQLFieldBuilder):
     field = fields.DatetimeField
     sql_field = sqlalchemy.types.DateTime
 
 
-class TimeFieldFactory(SQLFieldFactory):
+class TimeFieldBuilder(SQLFieldBuilder):
     field = fields.TimeField
     sql_field = sqlalchemy.types.Time
 
 
-class BooleanFieldFactory(SQLFieldFactory):
+class BooleanFieldBuilder(SQLFieldBuilder):
     field = fields.BooleanField
     sql_field = sqlalchemy.types.Boolean
 
@@ -117,14 +117,14 @@ class TableFieldFactory(object):
 
 def register():
     # Factories
-    StringFieldFactory.register()
-    TextFieldFactory.register()
-    IntegerFieldFactory.register()
-    FloatFieldFactory.register()
-    DateFieldFactory.register()
-    DatetimeFieldFactory.register()
-    TimeFieldFactory.register()
-    BooleanFieldFactory.register()
+    StringFieldBuilder.register()
+    TextFieldBuilder.register()
+    IntegerFieldBuilder.register()
+    FloatFieldBuilder.register()
+    DateFieldBuilder.register()
+    DatetimeFieldBuilder.register()
+    TimeFieldBuilder.register()
+    BooleanFieldBuilder.register()
     # Field producer
     provideAdapter(
         ColumnFieldFactory,
