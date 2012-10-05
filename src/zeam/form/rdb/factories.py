@@ -26,6 +26,7 @@ class SQLFieldBuilder(object):
 
     def __call__(self, sql_field):
         options = sql_field.info.copy()
+        instance_options = {}
         if 'identifier' not in options:
             options['identifier'] = sql_field.name
         if 'title' not in options:
@@ -35,6 +36,9 @@ class SQLFieldBuilder(object):
         if 'defaultValue' not in options:
             if sql_field.default is not None:
                 options['defaultValue'] = sql_field.default.arg
+        if 'mode' in options:
+            instance_options['mode'] = options['mode']
+
         if len(sql_field.foreign_keys):
             foreign_key = sql_field.foreign_keys[0]
             factory = fields.ChoiceField
@@ -44,7 +48,10 @@ class SQLFieldBuilder(object):
             del options['factory']
         else:
             factory = self.field
-        return factory(**options)
+        field = factory(**options)
+        for name, value in instance_options.iteritems():
+            setattr(field, name, value)
+        return field
 
 
 class StringFieldBuilder(SQLFieldBuilder):

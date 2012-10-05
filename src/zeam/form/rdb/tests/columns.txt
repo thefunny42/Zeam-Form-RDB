@@ -79,7 +79,8 @@ sqlalchemy's info dictionnary:
 
   >>> text_fields = Fields(Column(
   ...   'citation', Text, nullable=True, default='<Empty>',
-  ...   info={'title': u'Excerpt', 'required': True, 'defaultValue': NO_VALUE}))
+  ...   info={'title': u'Excerpt', 'required': True, 'defaultValue': NO_VALUE,
+  ...         'mode': 'display'}))
   >>> text_fields
   <Fields>
   >>> len(text_fields)
@@ -95,6 +96,8 @@ sqlalchemy's info dictionnary:
   <Marker NO_VALUE>
   >>> text_field.required
   True
+  >>> text_field.mode
+  'display'
 
 
 String Field with a custom form type
