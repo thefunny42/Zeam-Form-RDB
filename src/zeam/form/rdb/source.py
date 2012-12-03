@@ -78,7 +78,7 @@ def foreign_source(value_column, options):
         title_factory = options['foreignTitleFactory']
         del options['foreignTitleFactory']
     else:
-        title_factory = lambda d: str(d[0])
+        title_factory = lambda d: unicode(d[0])
 
     def create_terms(query):
         for result in query.all():
