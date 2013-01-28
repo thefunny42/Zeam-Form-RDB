@@ -12,6 +12,17 @@ class IFieldBuilder(Interface):
     pass
 
 
+class ForeignChoiceField(fields.ChoiceField):
+    """Custom choice field for foreign key. The distinction is only
+    made for forms that which to know if it is a native field or one
+    with a generated vocabulary.
+    """
+
+    def __init__(self, title, foreignKey=None, **options):
+        super(ForeignChoiceField, self).__init__(title, **options)
+        self.foreignKey = foreignKey
+
+
 class SQLFieldBuilder(object):
     grok.implements(IFieldBuilder)
     field = fields.TextLineField
@@ -41,8 +52,9 @@ class SQLFieldBuilder(object):
 
         if len(sql_field.foreign_keys):
             foreign_key = sql_field.foreign_keys[0]
-            factory = fields.ChoiceField
+            factory = ForeignChoiceField
             options['source'] = foreign_source(foreign_key.column, options)
+            options['foreignKey'] = foreign_key
         elif 'factory' in options:
             factory = options['factory']
             del options['factory']
